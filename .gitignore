@@ -1,0 +1,4 @@
+# ignore nodule modules inside client folder
+client/node_modules
+# ignore nodule modules inside server folder
+server/node_modules
