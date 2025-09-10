@@ -1,69 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/navbar/Navbar";
 import Footer from "../../../components/footer/Footer";
 import { FaTh, FaBars } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useProduct } from "../../../context/ProductContext";
+// import { products } from "../../../data/productArray";
 
 const AllProducts = () => {
-  // Sample static products for design purposes
-  const products = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 2999,
-      category: "Electronics",
-      image: "https://via.placeholder.com/300x200.png?text=Headphones",
-    },
-    {
-      id: 2,
-      name: "Smartwatch",
-      price: 4999,
-      category: "Wearables",
-      image: "https://via.placeholder.com/300x200.png?text=Smartwatch",
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      price: 2599,
-      category: "Footwear",
-      image: "https://via.placeholder.com/300x200.png?text=Shoes",
-    },
-    {
-      id: 4,
-      name: "Backpack",
-      price: 1599,
-      category: "Accessories",
-      image: "https://via.placeholder.com/300x200.png?text=Backpack",
-    },
-    {
-      id: 5,
-      name: "Gaming Mouse",
-      price: 1299,
-      category: "Electronics",
-      image: "https://via.placeholder.com/300x200.png?text=Mouse",
-    },
-    {
-      id: 6,
-      name: "Laptop Stand",
-      price: 899,
-      category: "Accessories",
-      image: "https://via.placeholder.com/300x200.png?text=Laptop+Stand",
-    },
-    {
-      id: 7,
-      name: "Bluetooth Speaker",
-      price: 1999,
-      category: "Electronics",
-      image: "https://via.placeholder.com/300x200.png?text=Speaker",
-    },
-    {
-      id: 8,
-      name: "Office Chair",
-      price: 7499,
-      category: "Furniture",
-      image: "https://via.placeholder.com/300x200.png?text=Chair",
-    },
-  ];
+  const [allCategories,setAllCategories] = useState([]);
+  const [allBrands,setAllBrands] = useState([]);
+  const {state,handleCategoryChange,handleViewChange,handlePriceFilter} = useProduct();
+  console.log(state.isGrid)
+
+  const getAllCategories =() =>{
+    const filterCat = state.products
+    const filterCategory = filterCat.filter((curEle)=>{
+      return curEle.category
+    })
+
+    setAllCategories(filterCategory)
+  }
+  const getAllBrands =() =>{}
+
+  useEffect(()=>{
+    getAllCategories()
+    getAllBrands()
+  },[])
 
   return (
     <>
@@ -77,13 +38,14 @@ const AllProducts = () => {
                 <h5 className="fw-bold mb-3">Filters</h5>
                 <div className="mb-3">
                   <label className="form-label fw-bold">Category</label>
-                  <select className="form-select">
-                    <option>All Categories</option>
-                    <option>Electronics</option>
-                    <option>Wearables</option>
-                    <option>Footwear</option>
-                    <option>Accessories</option>
-                    <option>Furniture</option>
+                  <select className="form-select" onChange={handleCategoryChange}>
+                    <option >All Categories</option>
+                    {
+                      allCategories.map((curEle)=>{
+                        return   <option value={curEle.category}>{curEle.category}</option>
+                      })
+                    }
+                   
                   </select>
                 </div>
                 <div className="mb-3">
@@ -92,17 +54,25 @@ const AllProducts = () => {
                     type="text"
                     className="form-control"
                     placeholder="1000 - 5000"
+                    value = {state.filterPrice}
+                    onChange={handlePriceFilter}
                   />
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <label className="form-label fw-bold">Brand</label>
                   <select className="form-select">
-                    <option>All Brands</option>
-                    <option>Brand A</option>
-                    <option>Brand B</option>
-                    <option>Brand C</option>
+                     <option>All Brands</option>
+                    {
+                      state.products.map((curEle)=>{
+                        
+                      }).filter((curEle)=>{
+                        return  <option>{curEle.brand}</option>
+                      })
+                    }
+                   
+                   
                   </select>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -111,11 +81,11 @@ const AllProducts = () => {
               {/* Top Bar: View Toggle + Sort */}
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="btn-group">
-                  <button className="btn btn-outline-secondary">
-                    <FaTh /> Grid
+                  <button className="btn btn-outline-secondary" onClick={()=>handleViewChange("grid")}>
+                    <FaTh />
                   </button>
-                  <button className="btn btn-outline-secondary">
-                    <FaBars /> List
+                  <button className="btn btn-outline-secondary" onClick={()=>handleViewChange("list")}>
+                    <FaBars /> 
                   </button>
                 </div>
                 <div className="d-flex align-items-center gap-2">
@@ -130,14 +100,14 @@ const AllProducts = () => {
               </div>
 
               {/* Products Grid */}
-              <div className="row g-4">
-                {products.map((product) => (
-                  <div key={product.id} className="col-md-4 col-sm-6">
+              <div className={state.isGrid?"row g-4":"g-4"}>
+                {state?.products?.map((product) => (
+                  <div key={product.id} className={state.isGrid?"col-md-4 col-sm-6":"col-12"}>
                     <div className="card h-100 shadow-sm">
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="card-img-top"
+                      style={{width:"100%",height:"150px"}}
                       />
                       <div className="card-body text-center">
                         <h5 className="card-title">{product.name}</h5>
